@@ -13,3 +13,7 @@ https://github.com/muneebullashariff/Best-Coding-Practices-/blob/master/coding_t
 3) Basic .vimrc file and required .vim/folders:
 
 https://github.com/muneebullashariff/Best-Coding-Practices-/tree/master/vim_root_folder
+
+4) Git and Github guidelines:
+
+https://github.com/muneebullashariff/Best-Coding-Practices-/blob/master/git_github_guidelines.sv
