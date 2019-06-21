@@ -1,7 +1,7 @@
 # i2c_vip
 Verification IP for I2C protocol
 
-# Links to refer for the specifcation 
+# Links to refer for the specification 
 http://www.ti.com/lit/an/slva704/slva704.pdf
 
 https://learn.sparkfun.com/tutorials/i2c/all
