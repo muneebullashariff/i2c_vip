@@ -2,41 +2,46 @@
 //
 // Project : Verification of I2C VIP
 //
-// File_name : master_xtn.sv
+// File_name : master_agent_config.sv
 //
 // https://github.com/muneebullashariff/i2c_vip
 //
 // ############################################################################
 
 //-----------------------------------------------------------------------------
-// Class: master_xtn
-// Description of the class :
-// This class contains variables that would ultimately be provided to
-// interface
+// Class: master_agent_config
+// Description of the class :Lower level components can be configured using
+// this class
+// This class acts like a container  
 //-----------------------------------------------------------------------------
 
-class master_xtn extends uvm_sequence_item;
-`uvm_object_utils(master_xtn)
+class master_agent_config extends uvm_object;
+	`uvm_object_utils(master_agent_config)
+	//virtual i2c_if vif;
+	uvm_active_passive_enum is_active=UVM_ACTIVE;  
 
 
 
-
-//--------------------------------------------
+//---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
-extern function new(string name="master_xtn");
+extern function new (string name = "master_agent_config");
+endclass: master_agent_config
 
-endclass
+
 //-----------------------------------------------------------------------------
 // Constructor: new
-// Initializes the master_xtn class object
+// Initializes the master_agent_config class object
 //
 // Parameters:
-//  name   - instance name of the master_xtn
+//  name   - instance name of the master_agent_config
 //-----------------------------------------------------------------------------
 
+function master_agent_config::new(string name = "master_agent_config");
+		super.new(name);
+	endfunction: new
 
-function master_xtn::new(string name="master_xtn");
-	super.new(name);
-endfunction
+
+
+
