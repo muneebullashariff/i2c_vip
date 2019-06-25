@@ -14,14 +14,21 @@
 // This class drives data to the interface 
 //-----------------------------------------------------------------------------
 
+class slave_driver extends uvm_driver#(slave_xtn);
+`uvm_component_utils(slave_driver)
 
-
-
+  slave_agent_config scfg;
+//virtual i2c_interface vif
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="slave_driver",uvm_component parent);
+extern function void build_phase(uvm_phase phase);
+//extern function void connect_phase(uvm_phase phase);
+
+endclass
 
 
 //-----------------------------------------------------------------------------
@@ -34,20 +41,24 @@
 //-----------------------------------------------------------------------------
 
 
-
-
+function slave_driver::new(string name="slave_driver",uvm_component parent);
+	super.new(name,parent);
+endfunction:new
 
 
 //-----------------------------------------------------------------------------
 // Function: build_phase
-// Gets the configuration object
+// Creates the required ports
 //
 // Parameters:
 //  phase - stores the current phase 
 //-----------------------------------------------------------------------------
 
 
-
+function void slave_driver::build_phase(uvm_phase phase);
+  if(!uvm_config_db#(slave_agent_config)::get(this,"","SLAVE_AGT_CONFIG",scfg))
+   `uvm_fatal("slave_driver","COULDNT GET")
+endfunction:build_phase
 
 
 
@@ -60,7 +71,9 @@
 //-----------------------------------------------------------------------------
 
 
-
+/*function void connect_phase(uvm_phase phase);
+vif=wcfg.vif;
+endfunction:connect_phase*/
 
 
 //-----------------------------------------------------------------------------
@@ -69,4 +82,5 @@
 //
 // Parameters:
 //  phase - stores the current phase 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+

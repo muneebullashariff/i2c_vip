@@ -14,14 +14,17 @@
 // This class is responsible for generating different stimulus for master
 //-----------------------------------------------------------------------------
 
-
-
+class master_sequence extends uvm_sequence#(master_xtn);
+`uvm_object_utils(master_sequence)
 
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="master_sequence");
+
+endclass
 
 
 //-----------------------------------------------------------------------------
@@ -33,7 +36,9 @@
 //-----------------------------------------------------------------------------
 
 
-
+function new(string name="master_agt_sequence");
+	super.new(name);
+endfunction
 
 
 //-----------------------------------------------------------------------------

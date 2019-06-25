@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------
 // Class: slave_agt_sequence
 // Description of the class :
-// This class is responsible for generating different stimulus for master
+// This class is responsible for generating different stimulus for slave
 //-----------------------------------------------------------------------------
 
 
@@ -40,5 +40,4 @@
 // Task: body
 // slave_xtn is randomized to get differnet test stimulus
 //-----------------------------------------------------------------------------
-
 

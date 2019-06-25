@@ -15,7 +15,11 @@
 //-----------------------------------------------------------------------------
 
 
+class master_agt_top extends uvm_agent;
+`uvm_component_utils(master_agt_top)
 
+master_agent magt[];
+environment_config ecfg;
 
 
 //---------------------------------------------
@@ -23,6 +27,10 @@
 //---------------------------------------------
 
 
+extern function new(string name="master_agt_top",uvm_component parent);
+extern function void build_phase(uvm_phase phase);
+ extern task run_phase(uvm_phase phase);
+endclass
 
 //-----------------------------------------------------------------------------
 // Constructor: new
@@ -34,7 +42,9 @@
 //-----------------------------------------------------------------------------
 
 
-
+function master_agt_top::new(string name="master_agt_top",uvm_component parent);
+	super.new(name,parent);
+endfunction
 
 
 //-----------------------------------------------------------------------------
@@ -46,5 +56,19 @@
 //-----------------------------------------------------------------------------
 
 
+function void master_agt_top::build_phase(uvm_phase phase);
+if(!uvm_config_db#(environment_config)::get(this,"","ENVIRONMENT_CONFIG",ecfg))
+  `uvm_fatal("MASTETR_AGT_TOP","couldnt get")
 
+magt=new[ecfg.no_of_magent];
 
+foreach(magt[i])
+ begin
+  magt[i]=master_agent::type_id::create($sformatf("magt[%0d]",i),this);
+   uvm_config_db#(master_agent_config)::set(this,"*","MASTER_AGT_CONFIG",ecfg.mcfg[i]);
+ end
+endfunction
+
+   task master_agt_top::run_phase(uvm_phase phase);
+     uvm_top.print_topology;
+   endtask

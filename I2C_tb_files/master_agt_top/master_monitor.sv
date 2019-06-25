@@ -15,12 +15,21 @@
 //-----------------------------------------------------------------------------
 
 
+class master_monitor extends uvm_monitor;
+`uvm_component_utils(master_monitor)
 
+
+master_agent_config mcfg;
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="master_monitor",uvm_component parent);
+extern function void build_phase(uvm_phase phase);
+//extern function void connect_phase(uvm_phase phase);
+
+endclass
 
 
 
@@ -35,6 +44,9 @@
 
 
 
+function master_monitor::new(string name="master_monitor",uvm_component parent);
+	super.new(name,parent);
+endfunction
 
 
 
@@ -48,6 +60,10 @@
 
 
 
+function void master_monitor::build_phase(uvm_phase phase);
+  if(!uvm_config_db#(master_agent_config)::get(this,"","MASTER_AGT_CONFIG",mcfg))
+   `uvm_fatal("master_monitor","COULDNT GET")
+endfunction
 
 
 

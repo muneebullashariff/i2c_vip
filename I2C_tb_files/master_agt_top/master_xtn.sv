@@ -15,16 +15,19 @@
 // interface
 //-----------------------------------------------------------------------------
 
+class master_xtn extends uvm_sequence_item;
+`uvm_object_utils(master_xtn)
 
 
 
 
-//---------------------------------------------
+//--------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="master_xtn");
 
-
+endclass
 //-----------------------------------------------------------------------------
 // Constructor: new
 // Initializes the master_xtn class object
@@ -34,3 +37,6 @@
 //-----------------------------------------------------------------------------
 
 
+function master_xtn::new(string name="master_xtn");
+	super.new(name);
+endfunction

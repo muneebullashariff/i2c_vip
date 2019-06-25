@@ -15,12 +15,19 @@
 //-----------------------------------------------------------------------------
 
 
+class slave_monitor extends uvm_monitor;
+`uvm_component_utils(slave_monitor)
 
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="slave_monitor",uvm_component parent);
+//extern function void build_phase(uvm_phase phase);
+//extern function void connect_phase(uvm_phase phase);
+
+endclass
 
 
 
@@ -35,6 +42,9 @@
 
 
 
+function slave_monitor::new(string name="slave_monitor",uvm_component parent);
+	super.new(name,parent);
+endfunction:new
 
 
 
@@ -48,26 +58,4 @@
 
 
 
-
-
-
-//-----------------------------------------------------------------------------
-// Function: connect_phase
-// Connects the virtual interface to the interface handle of the monitor
-//
-// Parameters:
-//  phase - stores the current phase 
-//-----------------------------------------------------------------------------
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// Task: run_phase
-// Collects the data
-//
-// Parameters:
-//  phase - stores the current phase 
-//-----------------------------------------------------------------------------
 
