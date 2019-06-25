@@ -14,14 +14,21 @@
 // This class drives data to the interface 
 //-----------------------------------------------------------------------------
 
+class master_driver extends uvm_driver#(master_xtn);
+`uvm_component_utils(master_driver)
 
-
-
+//virtual i2c_interface vif
+master_agent_config mcfg;
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
+extern function new(string name="master_driver",uvm_component parent);
+extern function void build_phase(uvm_phase phase);
+//extern function void connect_phase(uvm_phase phase);
+
+endclass
 
 
 //-----------------------------------------------------------------------------
@@ -34,8 +41,9 @@
 //-----------------------------------------------------------------------------
 
 
-
-
+function master_driver::new(string name="master_driver",uvm_component parent);
+	super.new(name,parent);
+endfunction
 
 
 //-----------------------------------------------------------------------------
@@ -47,7 +55,10 @@
 //-----------------------------------------------------------------------------
 
 
-
+function void master_driver::build_phase(uvm_phase phase);
+  if(!uvm_config_db#(master_agent_config)::get(this,"","MASTER_AGT_CONFIG",mcfg))
+   `uvm_fatal("master_driver","COULDNT GET")
+endfunction
 
 
 
@@ -60,7 +71,9 @@
 //-----------------------------------------------------------------------------
 
 
-
+/*function void connect_phase(uvm_phase phase);
+vif=wcfg.vif;
+endfunction*/
 
 
 //-----------------------------------------------------------------------------
