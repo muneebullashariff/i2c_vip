@@ -11,3 +11,6 @@ https://www.generationrobots.com/media/Capteur-MinIMU-9-v3/bus-I2C-UM10204-speci
 https://www.allaboutcircuits.com/technical-articles/the-i2c-bus-hardware-implementation-details/
 
 https://www.nxp.com/docs/en/user-guide/UM10204.pdf
+
+# Videos
+https://training.ti.com/i2c-technical-deep-dive-japan-2018
