@@ -1,4 +1,4 @@
-//  ############################################################################
+//  ###########################################################################
 //
 //  Licensed to the Apache Software Foundation (ASF) under one
 //  or more contributor license agreements.  See the NOTICE file
@@ -15,18 +15,15 @@
 //  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 //  KIND, either express or implied.  See the License for the
 //  specific language governing permissions and limitations
-//  under the License. 
+//  under the License.
 //
 //  ###########################################################################
-
-
 
 //-----------------------------------------------------------------------------
 // Class: Master_driver
 // Description of the class :
 // This class drives data to the interface 
 //-----------------------------------------------------------------------------
-
 `ifndef master_driver
 `define master_driver
 
@@ -43,11 +40,11 @@ master_agent_config mcfg;
 extern function new(string name="master_driver",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
 extern function void connect_phase(uvm_phase phase);
+extern task run_phase(uvm_phase phase);
 extern task send_start_bit(master_xtn xtn);
 extern task send_slave_address(master_xtn xtn);
 extern task send_write_data(master_xtn xtn);
 extern task send_stop_bit(master_xtn xtn);
-extern task run_phase(uvm_phase phase);
 
 endclass
 
@@ -129,11 +126,27 @@ task master_driver::run_phase(uvm_phase phase);
 endtask
 
 
+//-----------------------------------------------------------------------------
+// Task: send_start_bit
+// sends the start bit of the transaction
+//
+// Parameters:
+//  xtn - stores the transaction object handle 
+//-----------------------------------------------------------------------------
+
 task master_driver::send_start_bit(master_xtn xtn);
            @(vif.m_drv_cb_ctrl);
 	    vif.m_drv_cb_ctrl.sda_int<=xtn.start_bit;
 endtask
 
+
+//-----------------------------------------------------------------------------
+// Task:send_slave_address
+// sends the slave address of slave for write/read operation 
+// 
+// Parameters:
+//  xtn - stores the transaction object handle 
+//-----------------------------------------------------------------------------
 
 task master_driver::send_slave_address(master_xtn xtn);
 	foreach(xtn.slave_address[i])
@@ -145,6 +158,14 @@ task master_driver::send_slave_address(master_xtn xtn);
 	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
 endtask
 
+ 
+//-----------------------------------------------------------------------------
+// Task:send_write_data
+// sends the data that is to be written into the slave
+// 
+// Parameters:
+//  xtn - stores the transaction object handle 
+//-----------------------------------------------------------------------------
 
 task master_driver::send_write_data(master_xtn xtn);
         foreach(xtn.write_data[i])
@@ -156,6 +177,15 @@ task master_driver::send_write_data(master_xtn xtn);
 	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
 
 endtask
+
+
+//-----------------------------------------------------------------------------
+// Task:send_stop_bit
+// sends the stop bit to indicate the end of transfer
+// 
+// Parameters:
+//  xtn - stores the transaction object handle 
+//-----------------------------------------------------------------------------
 
 task master_driver::send_stop_bit(master_xtn xtn);
            @(vif.m_drv_cb_ctrl);
