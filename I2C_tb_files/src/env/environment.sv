@@ -1,12 +1,23 @@
-// ############################################################################
+//  ############################################################################
 //
-// Project : Verification of I2C VIP
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
 //
-// File_name : environment.sv
+//  http://www.apache.org/licenses/LICENSE-2.0
 //
-// https://github.com/muneebullashariff/i2c_vip
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License.
 //
-// ############################################################################
+//  ###########################################################################
 
 //-----------------------------------------------------------------------------
 // Class: environment
@@ -14,13 +25,18 @@
 // This class acts like a container
 //-----------------------------------------------------------------------------
 
+`ifndef environment
+`define environment
+
 class environment extends uvm_env;
 `uvm_component_utils(environment)
 
 master_agt_top mtop;
 slave_agt_top stop;
 scoreboard sb;
-  environment_config ecfg;
+environment_config ecfg;
+virtual_sequencer vseqr;
+
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
@@ -28,7 +44,7 @@ scoreboard sb;
 
 extern function new(string name="environment",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
-//extern function void connect_phase(uvm_phase phase);
+extern function void connect_phase(uvm_phase phase);
 
 endclass
 
@@ -68,6 +84,8 @@ stop=slave_agt_top::type_id::create("stop",this);
 
 sb=scoreboard::type_id::create("sb",this);
 
+vseqr=virtual_sequencer::type_id::create("vsqr",this);
+
 endfunction
 
 
@@ -79,19 +97,20 @@ endfunction
 //  phase - stores the current phase 
 //-----------------------------------------------------------------------------
 
-/*function void environment::connect_phase(uvm_phase phase);
+function void environment::connect_phase(uvm_phase phase);
 
 foreach(mtop.magt[i])
   begin
-	mtop.magt[i].monitor.mon_port.connect(sb.wrh[i].analysis_export);
+	//mtop.magt[i].monitor.mon_port.connect(sb.wrh[i].analysis_export);
+	vseqr.mseqr[i]=mtop.magt[i].sequencer;
   end
 
-foreach(rtop.ragt[i])
+foreach(stop.sagt[i])
    begin
-	vseqr.rseqr[i]=rtop.ragt[i].seq;
-	rtop.ragt[i].mon.mon_port.connect(sb.rdh[i].analysis_export);
-  end
+	//rtop.ragt[i].mon.mon_port.connect(sb.rdh[i].analysis_export);
+ 	vseqr.sseqr[i]=stop.sagt[i].sequencer;
+   end
 
-endfunction*/
+endfunction
 
-
+`endif
