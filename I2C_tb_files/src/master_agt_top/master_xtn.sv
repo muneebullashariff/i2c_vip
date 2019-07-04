@@ -1,12 +1,24 @@
-// ############################################################################
+//  ###########################################################################
 //
-// Project : Verification of I2C VIP
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
 //
-// File_name : master_xtn.sv
+//  http://www.apache.org/licenses/LICENSE-2.0
 //
-// https://github.com/muneebullashariff/i2c_vip
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License.
 //
-// ############################################################################
+//  ###########################################################################
+
 
 //-----------------------------------------------------------------------------
 // Class: master_xtn
@@ -14,20 +26,33 @@
 // This class contains variables that would ultimately be provided to
 // interface
 //-----------------------------------------------------------------------------
+`ifndef master_xtn
+`define master_xtn
 
 class master_xtn extends uvm_sequence_item;
 `uvm_object_utils(master_xtn)
 
-
-
+rand bit start_bit=1;
+rand bit [6:0]slave_address;
+rand bit rd_wr;
+bit ack;
+rand bit [7:0]write_data;
+rand bit stop_bit;
 
 //--------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
 extern function new(string name="master_xtn");
+extern function void do_print(uvm_printer printer);
 
-endclass
+constraint START { start_bit==1; }
+constraint STOP  { stop_bit ==0; }
+constraint S_ADDR{ slave_address == 7'b0000001;}
+constraint W_DATA{ write_data    == 8'b00000001;}
+
+
+endclass:master_xtn
 //-----------------------------------------------------------------------------
 // Constructor: new
 // Initializes the master_xtn class object
@@ -39,4 +64,24 @@ endclass
 
 function master_xtn::new(string name="master_xtn");
 	super.new(name);
+endfunction:new
+
+
+//-----------------------------------------------------------------------------
+// Function: do_print
+// prints the transaction items when called 
+//
+// Parameters:
+// phase - stores the current phase 
+//-----------------------------------------------------------------------------
+
+function void master_xtn::do_print(uvm_printer printer);
+        super.do_print(printer);
+printer.print_field("START_BIT",	this.start_bit, 	1,	UVM_BIN);
+printer.print_field("STOP_BIT",		this.stop_bit,	        1,	UVM_BIN);
+printer.print_field("RD_WR",		this.rd_wr,	        1,	UVM_BIN);
+printer.print_field("SLAVE_ADDR",	this.slave_address,	7,	UVM_BIN);
+printer.print_field("WRITE_DATA",	this.write_data,	8,	UVM_BIN);
 endfunction
+
+`endif
