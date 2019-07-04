@@ -1,12 +1,25 @@
-// ############################################################################
+//  ############################################################################
 //
-// Project : Verification of I2C VIP
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
 //
-// File_name : Master_driver.sv
+//  http://www.apache.org/licenses/LICENSE-2.0
 //
-// https://github.com/muneebullashariff/i2c_vip
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License. 
 //
-// ############################################################################
+//  ###########################################################################
+
+
 
 //-----------------------------------------------------------------------------
 // Class: Master_driver
@@ -14,10 +27,13 @@
 // This class drives data to the interface 
 //-----------------------------------------------------------------------------
 
+`ifndef master_driver
+`define master_driver
+
 class master_driver extends uvm_driver#(master_xtn);
 `uvm_component_utils(master_driver)
 
-//virtual i2c_interface vif
+virtual i2c_intf vif;
 master_agent_config mcfg;
 
 //---------------------------------------------
@@ -26,7 +42,12 @@ master_agent_config mcfg;
 
 extern function new(string name="master_driver",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
-//extern function void connect_phase(uvm_phase phase);
+extern function void connect_phase(uvm_phase phase);
+extern task send_start_bit(master_xtn xtn);
+extern task send_slave_address(master_xtn xtn);
+extern task send_write_data(master_xtn xtn);
+extern task send_stop_bit(master_xtn xtn);
+extern task run_phase(uvm_phase phase);
 
 endclass
 
@@ -56,7 +77,7 @@ endfunction
 
 
 function void master_driver::build_phase(uvm_phase phase);
-  if(!uvm_config_db#(master_agent_config)::get(this,"","MASTER_AGT_CONFIG",mcfg))
+  if(!uvm_config_db#(master_agent_config)::get(this,"","MASTER_AGENT_CONFIG",mcfg))
    `uvm_fatal("master_driver","COULDNT GET")
 endfunction
 
@@ -71,9 +92,10 @@ endfunction
 //-----------------------------------------------------------------------------
 
 
-/*function void connect_phase(uvm_phase phase);
-vif=wcfg.vif;
-endfunction*/
+function void master_driver::connect_phase(uvm_phase phase);
+vif=mcfg.vif;
+endfunction
+
 
 
 //-----------------------------------------------------------------------------
@@ -84,3 +106,61 @@ endfunction*/
 //  phase - stores the current phase 
 //-----------------------------------------------------------------------------
 
+task master_driver::run_phase(uvm_phase phase);
+
+  fork 
+    forever
+       #(mcfg.clk_period) vif.clk_int=!vif.clk_int;
+  join_none
+
+  forever
+    begin
+
+ 	seq_item_port.get_next_item(req);
+
+	    send_start_bit(req);
+	    send_slave_address(req);
+	    send_write_data(req);
+	    send_stop_bit(req);
+
+	seq_item_port.item_done;
+
+    end
+endtask
+
+
+task master_driver::send_start_bit(master_xtn xtn);
+           @(vif.m_drv_cb_ctrl);
+	    vif.m_drv_cb_ctrl.sda_int<=xtn.start_bit;
+endtask
+
+
+task master_driver::send_slave_address(master_xtn xtn);
+	foreach(xtn.slave_address[i])
+	  begin
+	    @(vif.m_drv_cb_data);
+	    vif.m_drv_cb_data.sda_int<=xtn.slave_address[6-i];
+	  end
+	    #(mcfg.clk_period/2);
+	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
+endtask
+
+
+task master_driver::send_write_data(master_xtn xtn);
+        foreach(xtn.write_data[i])
+	  begin
+	    @(vif.m_drv_cb_data);
+	     vif.m_drv_cb_data.sda_int<=xtn.write_data[7-i];
+	  end
+	    #(mcfg.clk_period/2);
+	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
+
+endtask
+
+task master_driver::send_stop_bit(master_xtn xtn);
+           @(vif.m_drv_cb_ctrl);
+	    vif.m_drv_cb_ctrl.sda_int<=xtn.stop_bit;
+endtask
+
+
+`endif
