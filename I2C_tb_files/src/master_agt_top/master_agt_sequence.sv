@@ -1,12 +1,24 @@
-// ############################################################################
+//  ############################################################################
 //
-// Project : Verification of I2C VIP
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
 //
-// File_name : master_agt_sequence.sv
+//  http://www.apache.org/licenses/LICENSE-2.0
 //
-// https://github.com/muneebullashariff/i2c_vip
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License.
 //
-// ############################################################################
+//  ###########################################################################
+
 
 //-----------------------------------------------------------------------------
 // Class: master_agt_sequence
@@ -14,15 +26,16 @@
 // This class is responsible for generating different stimulus for master
 //-----------------------------------------------------------------------------
 
-class master_sequence extends uvm_sequence#(master_xtn);
-`uvm_object_utils(master_sequence)
+class master_agt_sequence extends uvm_sequence#(master_xtn);
+`uvm_object_utils(master_agt_sequence)
 
 
 //---------------------------------------------
 // Externally defined tasks and functions
 //---------------------------------------------
 
-extern function new(string name="master_sequence");
+extern function new(string name="master_agt_sequence");
+extern task body;
 
 endclass
 
@@ -36,7 +49,7 @@ endclass
 //-----------------------------------------------------------------------------
 
 
-function new(string name="master_agt_sequence");
+function master_agt_sequence::new(string name="master_agt_sequence");
 	super.new(name);
 endfunction
 
@@ -46,4 +59,11 @@ endfunction
 // master_xtn is randomized to get differnet test stimulus
 //-----------------------------------------------------------------------------
 
-
+task master_agt_sequence::body;
+     req=master_xtn::type_id::create("req");
+     
+     start_item(req);
+       assert(req.randomize());
+     finish_item(req);
+    
+endtask
