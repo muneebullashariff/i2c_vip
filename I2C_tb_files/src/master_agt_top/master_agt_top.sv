@@ -1,12 +1,23 @@
-// ############################################################################
+//  ############################################################################
 //
-// Project : Verification of I2C VIP
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
 //
-// File_name : master_agt_top.sv
+//  http://www.apache.org/licenses/LICENSE-2.0
 //
-// https://github.com/muneebullashariff/i2c_vip
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License.
 //
-// ############################################################################
+//  ###########################################################################
 
 //-----------------------------------------------------------------------------
 // Class: master_agt_top
@@ -14,6 +25,9 @@
 // This class acts like a container to master agents 
 //-----------------------------------------------------------------------------
 
+
+`ifndef master_agt_top
+`define master_agt_top
 
 class master_agt_top extends uvm_agent;
 `uvm_component_utils(master_agt_top)
@@ -29,7 +43,6 @@ environment_config ecfg;
 
 extern function new(string name="master_agt_top",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
- extern task run_phase(uvm_phase phase);
 endclass
 
 //-----------------------------------------------------------------------------
@@ -58,17 +71,15 @@ endfunction
 
 function void master_agt_top::build_phase(uvm_phase phase);
 if(!uvm_config_db#(environment_config)::get(this,"","ENVIRONMENT_CONFIG",ecfg))
-  `uvm_fatal("MASTETR_AGT_TOP","couldnt get")
-
+  `uvm_error("MASTETR_AGT_TOP","couldnt get")
+   
 magt=new[ecfg.no_of_magent];
 
 foreach(magt[i])
  begin
   magt[i]=master_agent::type_id::create($sformatf("magt[%0d]",i),this);
-   uvm_config_db#(master_agent_config)::set(this,"*","MASTER_AGT_CONFIG",ecfg.mcfg[i]);
+   uvm_config_db#(master_agent_config)::set(this,"*","MASTER_AGENT_CONFIG",ecfg.mcfg[i]);
  end
 endfunction
 
-   task master_agt_top::run_phase(uvm_phase phase);
-     uvm_top.print_topology;
-   endtask
+`endif
