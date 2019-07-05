@@ -29,15 +29,18 @@
 `ifndef master_xtn
 `define master_xtn
 
+typedef enum {ADDRESS_7BIT=7, ADDRESS_10BIT=10} slave_address_e; 
+
 class master_xtn extends uvm_sequence_item;
 `uvm_object_utils(master_xtn)
 
 rand bit start_bit=1;
-rand bit [6:0]slave_address;
+rand bit [9:0]slave_address;
 rand bit rd_wr;
 bit ack;
 rand bit [7:0]write_data;
 rand bit stop_bit;
+rand slave_address_e sl_addr_mode; 
 
 //--------------------------------------------
 // Externally defined tasks and functions
@@ -48,9 +51,12 @@ extern function void do_print(uvm_printer printer);
 
 constraint START { start_bit==1; }
 constraint STOP  { stop_bit ==0; }
-constraint S_ADDR{ slave_address == 7'b0000001;}
-constraint W_DATA{ write_data    == 8'b00000001;}
-
+constraint S_ADDR{ 
+                  if (sl_addr_mode == ADDRESS_7BIT)  { slave_address == 7'b000_0001; }
+                  if (sl_addr_mode == ADDRESS_10BIT) { slave_address == 10'b00_0010_00001; } 
+                  }
+constraint W_DATA{ write_data    == 8'b0000_0001;}
+constraint soft slave_address_mode_c { sl_addr_mode == ADDRESS_7BIT; }
 
 endclass:master_xtn
 //-----------------------------------------------------------------------------

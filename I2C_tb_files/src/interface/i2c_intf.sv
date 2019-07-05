@@ -29,45 +29,44 @@ interface i2c_intf;
  // logic sda_i;
 
   clocking m_drv_cb_ctrl@(posedge scl);
-     default input #1 output #1;
+     //default input #1 output #1;
      output sda_int;
   endclocking
 
   clocking m_drv_cb_data @ (negedge scl);
-     default input #1 output #1;
-      output sda_int;
+     //default input #1 output #1;
+     output sda_int;
   endclocking
 
   clocking m_mon_cb @(posedge scl);
-     default input #1 output #1;
+     //default input #1 output #1;
      input scl;
      input sda;
   endclocking
 
   clocking s_drv_cb @ (posedge scl);
-     default input #1 output #1;
+     //default input #1 output #1;
      inout scl;
      inout sda;
   endclocking
 
   clocking s_mon_cb @(posedge scl);
-     default input #1 output #1;
+     //default input #1 output #1;
      input scl;
      input sda;
   endclocking
 
-   modport M_DRV (clocking m_drv_cb_data);
-   modport M_MON (clocking m_mon_cb);
-   modport S_DRV (clocking s_drv_cb);
-   modport S_MON (clocking s_mon_cb);
+  modport M_DRV (clocking m_drv_cb_data);
+  modport M_MON (clocking m_mon_cb);
+  modport S_DRV (clocking s_drv_cb);
+  modport S_MON (clocking s_mon_cb);
 
-  
-assign scl=(clk_int) ? 1'bz:1'b0;
-assign (weak0,weak1)scl=1'b1;
-assign scl_i = scl;
+  assign scl=(clk_int) ? 1'bz:1'b0;
+  assign (weak0,weak1)scl=1'b1;
+  assign scl_i = scl;
 
-assign sda=(sda_int) ? 1'bz:1'b0;
-assign (weak0,weak1)sda=1'b1;
-assign sda_i = sda;
+  assign sda=(sda_int) ? 1'bz:1'b0;
+  assign (weak0,weak1)sda=1'b1;
+  assign sda_i = sda;
 
 endinterface
