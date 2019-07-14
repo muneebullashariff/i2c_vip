@@ -41,6 +41,7 @@ extern function new(string name="master_driver",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
 extern function void connect_phase(uvm_phase phase);
 extern task run_phase(uvm_phase phase);
+extern task drive_to_dut(master_xtn xtn);
 extern task send_start_bit(master_xtn xtn);
 extern task send_slave_address(master_xtn xtn);
 extern task send_write_data(master_xtn xtn);
@@ -87,9 +88,13 @@ endfunction
 // Parameters:
 //  phase - stores the current phase 
 //-----------------------------------------------------------------------------
+
+
 function void master_driver::connect_phase(uvm_phase phase);
-  vif=mcfg.vif;
+vif=mcfg.vif;
 endfunction
+
+
 
 //-----------------------------------------------------------------------------
 // Task: run_phase
@@ -98,21 +103,24 @@ endfunction
 // Parameters:
 //  phase - stores the current phase 
 //-----------------------------------------------------------------------------
+
 task master_driver::run_phase(uvm_phase phase);
 
   fork 
-    forever begin
+    forever
+      begin
        #(mcfg.clk_period) vif.clk_int=!vif.clk_int;
-    end
+      end
   join_none
 
   forever
-  begin
- 	  seq_item_port.get_next_item(req);
-    drive_to_dut(req);
-	  seq_item_port.item_done;
-  end
-endtask: run_phase
+    begin
+ 	seq_item_port.get_next_item(req);
+	  drive_to_dut(req);
+	seq_item_port.item_done;
+    end
+endtask
+
 
 task master_driver::drive_to_dut(master_xtn xtn);
   send_start_bit(xtn);
@@ -128,9 +136,10 @@ endtask: drive_to_dut
 // Parameters:
 //  xtn - stores the transaction object handle 
 //-----------------------------------------------------------------------------
+
 task master_driver::send_start_bit(master_xtn xtn);
-  @(vif.m_drv_cb_ctrl);
-	vif.m_drv_cb_ctrl.sda_int<=xtn.start_bit;
+           @(vif.m_drv_cb_ctrl);
+	    vif.m_drv_cb_ctrl.sda_int<=xtn.start_bit;
 endtask
 
 
@@ -143,21 +152,19 @@ endtask
 //-----------------------------------------------------------------------------
 
 task master_driver::send_slave_address(master_xtn xtn);
-  // Driving the MSB bit of the slave address
-  for(int i=xtn.sl_addr_mode-1; i>=0; i++) begin
+
+   // Driving the MSB bit of the slave address
+  for(int i=xtn.sl_addr_mode-1; i>=0; i--)
+   begin
     @(vif.m_drv_cb_data);
     vif.m_drv_cb_data.sda_int<=xtn.slave_address[i];
-  end
-
-  #(mcfg.clk_period/2);
-  vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
-
-  // TODO: Check for ACK here
+   end
+    	#(mcfg.clk_period/2);
+	vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
 endtask
 
-// TODO: Implement the task for acknowledgemnt from slave
  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Task:send_write_data
 // sends the data that is to be written into the slave
 // 
@@ -166,17 +173,14 @@ endtask
 //-----------------------------------------------------------------------------
 
 task master_driver::send_write_data(master_xtn xtn);
-  const int DATA_8BIT = 8;
+	for(int i=0;i<8;i++)
+	  begin
+	    @(vif.m_drv_cb_data);
+	     vif.m_drv_cb_data.sda_int<=xtn.write_data[7-i];
+	  end
+	    #(mcfg.clk_period/2);
+	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
 
-  // Driving the MSB bit of the data
-  for(int i=DATA_8BIT-1; i>=0; i++) begin
-    @(vif.m_drv_cb_data);
-    vif.m_drv_cb_data.sda_int<=xtn.write_data[i];
-  end
-  #(mcfg.clk_period/2);
-  vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
-
-  // TODO: Check for ACK here
 endtask
 
 
