@@ -34,7 +34,7 @@ typedef enum {ADDRESS_7BIT=7, ADDRESS_10BIT=10} slave_address_e;
 class master_xtn extends uvm_sequence_item;
 `uvm_object_utils(master_xtn)
 
-rand bit start_bit=1;
+rand bit start_bit;
 rand bit [9:0]slave_address;
 rand bit rd_wr;
 bit ack;
@@ -49,14 +49,15 @@ rand slave_address_e sl_addr_mode;
 extern function new(string name="master_xtn");
 extern function void do_print(uvm_printer printer);
 
-constraint START { start_bit==1; }
-constraint STOP  { stop_bit ==0; }
+constraint START { start_bit==0; }
+constraint STOP  { stop_bit ==1; }
+constraint W_DATA{ write_data    == 8'b1000_0000;}
 constraint S_ADDR{ 
-                  if (sl_addr_mode == ADDRESS_7BIT)  { slave_address == 7'b000_0001; }
-                  if (sl_addr_mode == ADDRESS_10BIT) { slave_address == 10'b00_0010_00001; } 
+                  if (sl_addr_mode == ADDRESS_7BIT)  { slave_address == 7'b100_0000; }
+                  if (sl_addr_mode == ADDRESS_10BIT) { slave_address == 10'b00_0000_0001; } 
                   }
-constraint W_DATA{ write_data    == 8'b0000_0001;}
-constraint soft slave_address_mode_c { sl_addr_mode == ADDRESS_7BIT; }
+constraint  slave_address_mode_c { sl_addr_mode == ADDRESS_7BIT; }
+
 
 endclass:master_xtn
 //-----------------------------------------------------------------------------
