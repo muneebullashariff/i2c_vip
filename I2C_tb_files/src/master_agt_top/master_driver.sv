@@ -123,10 +123,13 @@ endtask
 
 
 task master_driver::drive_to_dut(master_xtn xtn);
-  send_start_bit(xtn);
-  send_slave_address(xtn);
-  send_write_data(xtn);
-  send_stop_bit(xtn);
+    send_start_bit(xtn);
+    send_slave_address(xtn);
+  repeat(mcfg.no_of_data_item)
+   begin
+    send_write_data(xtn);
+   end
+   send_stop_bit(xtn);
 endtask: drive_to_dut
 
 //-----------------------------------------------------------------------------
@@ -139,7 +142,7 @@ endtask: drive_to_dut
 
 task master_driver::send_start_bit(master_xtn xtn);
            @(vif.m_drv_cb_ctrl);
-	    vif.m_drv_cb_ctrl.sda_int<=xtn.start_bit;
+	    vif.m_drv_cb_ctrl.sda_int<=1'b0;//Pulls the line low to indicate start of a transfer
 endtask
 
 
@@ -159,8 +162,13 @@ task master_driver::send_slave_address(master_xtn xtn);
     @(vif.m_drv_cb_data);
     vif.m_drv_cb_data.sda_int<=xtn.slave_address[i];
    end
-    	#(mcfg.clk_period/2);
-	vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
+   //master decides either read/write operation
+    @(vif.m_drv_cb_data);
+    vif.m_drv_cb_data.sda_int<=xtn.rd_wr;
+    @(vif.m_drv_cb_data);
+    vif.m_drv_cb_data.sda_int<=1'b1;     //Release sda line so that slave can send ack/nack
+
+    //@(vif.m_drv_cb_ctrl);
 endtask
 
  
@@ -178,8 +186,8 @@ task master_driver::send_write_data(master_xtn xtn);
 	    @(vif.m_drv_cb_data);
 	     vif.m_drv_cb_data.sda_int<=xtn.write_data[7-i];
 	  end
-	    #(mcfg.clk_period/2);
-	    vif.sda_int<=1'b1;     //RELEASE SDA LINE SO THAT SLAVE CAN SEND ACK/NACK
+    	    @(vif.m_drv_cb_data);
+	    vif.m_drv_cb_data.sda_int<=1'b1;     //Release sda line so that slave can send ack/nack
 
 endtask
 
@@ -194,7 +202,7 @@ endtask
 
 task master_driver::send_stop_bit(master_xtn xtn);
            @(vif.m_drv_cb_ctrl);
-	    vif.m_drv_cb_ctrl.sda_int<=xtn.stop_bit;
+	   vif.m_drv_cb_ctrl.sda_int<=1'b1;//Releases the line at posedge indicating end of transfer
 endtask
 
 
