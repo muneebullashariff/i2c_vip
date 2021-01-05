@@ -45,6 +45,8 @@ virtual_sequencer vseqr;
 extern function new(string name="environment",uvm_component parent);
 extern function void build_phase(uvm_phase phase);
 extern function void connect_phase(uvm_phase phase);
+extern function void end_of_elaboration_phase(uvm_phase phase);
+
 
 endclass
 
@@ -113,4 +115,8 @@ foreach(stop.sagt[i])
 
 endfunction
 
+  function void environment:: end_of_elaboration_phase (uvm_phase phase);
+         uvm_top.print_topology ();
+      endfunction
+ 
 `endif
