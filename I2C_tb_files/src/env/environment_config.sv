@@ -52,6 +52,7 @@ class environment_config extends uvm_object;
 
 extern function new(string name = "environment_config");
 
+
 endclass: environment_config
 
 //-----------------------------------------------------------------------------
