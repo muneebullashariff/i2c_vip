@@ -120,15 +120,17 @@ task master_driver::run_phase(uvm_phase phase);
 	seq_item_port.item_done;
     end
 endtask
-
+//--------------------------------------------------------------------------------------------
+// indentataion is done here
+//--------------------------------------------------------------------------------------------
 
 task master_driver::drive_to_dut(master_xtn xtn);
     send_start_bit(xtn);
     send_slave_address(xtn);
-  repeat(mcfg.no_of_data_item)
-   begin
-    send_write_data(xtn);
-   end
+    repeat(mcfg.no_of_data_item)
+    begin
+      send_write_data(xtn);
+    end
    send_stop_bit(xtn);
 endtask: drive_to_dut
 
