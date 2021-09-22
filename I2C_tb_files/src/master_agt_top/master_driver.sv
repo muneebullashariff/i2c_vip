@@ -59,6 +59,9 @@ endclass
 //  parent - parent under which this component is created
 //-----------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------
+//master driver
+//-----------------------------------------------------------------------------
 
 function master_driver::new(string name="master_driver",uvm_component parent);
 	super.new(name,parent);
